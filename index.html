@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snap word — Snap it, get the word</title>
+<style>
+  body { margin: 0; min-height: 100vh; background: #fffdf8;
+    display: flex; flex-direction: column; align-items: center;
+    font-family: "Segoe UI", Tahoma, sans-serif; color: #c0452c; }
+  .stage { display: flex; flex-direction: column; align-items: center;
+    margin-top: 24px; }
+  .stage img { width: min(420px, 80vw); height: auto; display: block; }
+  .stage img.title { /* ชื่อนิ่ง ไม่ขยับ */ }
+  .stage img.folder { animation: float 3s ease-in-out infinite; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-12px) rotate(1deg); } }
+  .stage img.folder:hover { animation: wiggle .4s ease-in-out infinite; }
+  @keyframes wiggle {
+    0%,100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); } }
+</style>
+</head>
+<body>
+  <div class="stage">
+  <!-- ชื่อจากรูปวาด นิ่ง -->
+  <img class="title" src="figma/art-title.svg" alt="Snap word">
+  <!-- แฟ้มจากรูปวาด ลอย -->
+  <img class="folder" src="figma/art-folder.svg" alt="folder drawing">
+  </div>
+</body>
+</html>
