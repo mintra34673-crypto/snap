@@ -13,7 +13,7 @@
     display: flex; flex-direction: column; align-items: center; }
   .hero { position: relative; width: min(900px, 100vw); min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; padding: 24px 16px 60px; }
-  a.know { position: absolute; top: 24px; right: 24px; display: block; }
+  a.know { position: fixed; top: 24px; right: 24px; display: block; z-index: 10; }
   .know img { width: 130px; height: auto; display: block; }
   .title img, .sub img, .know img { mix-blend-mode: multiply; }
   .title img { width: min(560px, 86vw); height: auto; display: block; margin-top: 40px; }
@@ -28,7 +28,13 @@
   /* ดาว CSS กะพริบ */
   .star { position: absolute; color: var(--star); line-height: 1;
     text-shadow: 0 0 12px var(--star), 0 0 28px var(--star);
-    animation: twinkle 1.8s ease-in-out infinite; user-select: none; }
+    animation: fall var(--fall, 11s) linear infinite, twinkle 1.8s ease-in-out infinite;
+    user-select: none; }
+  @keyframes fall {
+    0% { translate: 0 -6vh; opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { translate: 0 62vh; opacity: 0; } }
   @keyframes twinkle {
     0%,100% { opacity: 1; transform: scale(1) rotate(0deg); }
     50% { opacity: .45; transform: scale(.75) rotate(15deg); } }
