@@ -25,7 +25,9 @@
   @keyframes float {
     0%,100% { transform: translateY(0) rotate(-.6deg); }
     50% { transform: translateY(-12px) rotate(.6deg); } }
-  /* ดาว CSS กะพริบ */
+  #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  #stars .star { position: absolute; }
+  .hero { z-index: 1; }
   .star { position: absolute; color: var(--star); line-height: 1;
     text-shadow: 0 0 12px var(--star), 0 0 28px var(--star);
     animation: fall var(--fall, 11s) linear infinite, twinkle 1.8s ease-in-out infinite;
@@ -46,11 +48,31 @@
     <img src="figma2/Know more.png" alt="Know more">
   </a>
 
-  <span class="star" style="top:6%;left:12%;font-size:28px">★</span>
-  <span class="star" style="top:4%;left:46%;font-size:22px;animation-delay:.5s">★</span>
-  <span class="star" style="top:18%;left:8%;font-size:20px;animation-delay:1s">★</span>
-  <span class="star" style="top:8%;right:14%;font-size:24px;animation-delay:.3s">★</span>
-  <span class="star" style="top:44%;right:6%;font-size:26px;animation-delay:.8s">★</span>
+<div id="stars"></div>
+
+<script>
+  // สุ่มดาวเหลืองทั่วจอ เว้นตรงกลางไม่ให้บังเนื้อหา
+  (function () {
+    const box = document.getElementById('stars');
+    const COUNT = 16;
+    let placed = 0, guard = 0;
+    while (placed < COUNT && guard++ < 200) {
+      const left = 2 + Math.random() * 96;
+      const top = Math.random() * 95;
+      if (left > 32 && left < 68 && top > 8 && top < 78) continue; // เว้นกลาง
+      const s = document.createElement('span');
+      s.className = 'star';
+      s.textContent = '★';
+      s.style.left = left + 'vw';
+      s.style.top = top + 'vh';
+      s.style.fontSize = (12 + Math.random() * 14 | 0) + 'px';
+      s.style.setProperty('--fall', (9 + Math.random() * 9).toFixed(1) + 's');
+      s.style.animationDelay = (Math.random() * 12).toFixed(1) + 's, ' + (Math.random() * 1.8).toFixed(1) + 's';
+      box.appendChild(s);
+      placed++;
+    }
+  })();
+</script>
 
   <div class="title"><img src="figma2/title.jpg" alt="Snap word"></div>
   <div class="sub"><img src="figma2/Snap it, get the word.png" alt="Snap it, get the word"></div>
