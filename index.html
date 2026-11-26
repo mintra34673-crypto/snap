@@ -13,7 +13,7 @@
     display: flex; flex-direction: column; align-items: center; }
   .hero { position: relative; width: min(900px, 100vw); min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; padding: 24px 16px 60px; }
-  a.know { position: fixed; top: 24px; right: 24px; display: block; z-index: 10; }
+  span.know { position: fixed; top: 24px; right: 24px; display: block; }
   .know img { width: 130px; height: auto; display: block; }
   .title img, .sub img, .know img { mix-blend-mode: multiply; }
   .title img { width: min(560px, 86vw); height: auto; display: block; margin-top: 40px; }
@@ -25,9 +25,8 @@
   @keyframes float {
     0%,100% { transform: translateY(0) rotate(-.6deg); }
     50% { transform: translateY(-12px) rotate(.6deg); } }
-  #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  #stars { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
   #stars .star { position: absolute; }
-  .hero { z-index: 1; }
   .star { position: absolute; color: var(--star); line-height: 1;
     text-shadow: 0 0 12px var(--star), 0 0 28px var(--star);
     animation: fall var(--fall, 11s) linear infinite, twinkle 1.8s ease-in-out infinite;
@@ -44,9 +43,9 @@
 </head>
 <body>
 <main class="hero">
-  <a class="know" href="login.html">
-    <img src="figma2/Know more.png" alt="Know more">
-  </a>
+  <span class="know" aria-hidden="true">
+    <img src="figma2/Know more.png" alt="">
+  </span>
 
 <div id="stars"></div>
 
