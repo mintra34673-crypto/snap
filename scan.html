@@ -108,14 +108,19 @@
       if (!r.ok) throw new Error('OCR ' + r.status);
       const data = await r.json();
       out.textContent = data.text + '\n\n—— summarizing ——';
-      const s = await fetch(API + '/summarize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: data.text }),
-      });
-      if (!s.ok) throw new Error('summarize ' + s.status);
-      const sj = await s.json();
-      out.textContent = data.text + '\n\n—— summary ——\n' + sj.summary;
+      try {
+        const s = await fetch(API + '/summarize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: data.text }),
+        });
+        if (!s.ok) throw new Error('summarize ' + s.status);
+        const sj = await s.json();
+        out.textContent = data.text + '\n\n—— summary ——\n' + sj.summary;
+      } catch (e2) {
+        out.textContent = data.text +
+          '\n\n—— summary failed (' + e2.message + '), tap the file again to retry ——';
+      }
     } catch (e) {
       out.textContent = 'failed: ' + e.message +
         '\n(open a terminal in cor/ and run: .venv\\Scripts\\python -m uvicorn app.main:app --port 8000)';
