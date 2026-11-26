@@ -104,7 +104,7 @@
     try {
       const fd = new FormData();
       fd.append('file', f);
-      const r = await fetch(API + '/ocr', { method: 'POST', body: fd });
+      const r = await fetch(API + '/ocr?second=true', { method: 'POST', body: fd });
       if (!r.ok) throw new Error('OCR ' + r.status);
       const data = await r.json();
       out.textContent = data.text + '\n\n—— summarizing ——';
