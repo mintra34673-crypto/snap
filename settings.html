@@ -30,6 +30,9 @@
   .theme[data-c="black"] { color: #1c1c1c; border-color: #1c1c1c; }
   .theme[aria-pressed="true"] { border: 3px solid #1c1c1c; }
   #msg { min-height: 1.4em; font-size: .85rem; color: #555; margin-top: 14px; }
+  .back { display: inline-block; margin-top: 18px; color: #555; font-size: .9rem;
+    text-decoration: none; }
+  .back:hover { opacity: .65; }
 </style>
 </head>
 <body>
@@ -50,6 +53,7 @@
     </div>
     <div id="msg"></div>
   </div>
+  <br><a class="back" href="login.html">← back</a>
 </div>
 <script>
   const nameInput = document.getElementById('scanName');
