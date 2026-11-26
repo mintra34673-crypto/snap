@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings — Snap word</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #fff;
+    font-family: ui-monospace, "Courier New", Menlo, monospace;
+    color: #1c1c1c; display: flex; align-items: center; justify-content: center; }
+  .wrap { padding: 24px; width: min(520px, 94vw); }
+  .card { border: 2px solid #1c1c1c; border-radius: 28px; padding: 28px 36px 32px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px; }
+  .head h1 { font-size: 1rem; font-weight: 400; margin: 0; }
+  button.save { border: 0; background: none; cursor: pointer; font: inherit;
+    font-size: 1rem; letter-spacing: 1px; padding: 4px 8px; }
+  button.save:hover { opacity: .6; }
+  label { display: block; font-size: .9rem; margin: 16px 0 8px; color: #333; }
+  input[type="text"] { width: 100%; font: inherit; font-size: 1rem; padding: 12px 14px;
+    border: 2px dashed #1c1c1c; border-radius: 6px; background: #fff; color: #1c1c1c; }
+  .themes { display: flex; gap: 18px; margin-top: 4px; }
+  .theme { width: 52px; height: 52px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid #ccc; background: #fff; font-size: 24px; line-height: 1;
+    display: flex; align-items: center; justify-content: center; padding: 0; }
+  .theme[data-c="yellow"] { color: #ffda62; border-color: #ffda62; }
+  .theme[data-c="pink"] { color: #e8a0e8; border-color: #e8a0e8; }
+  .theme[data-c="green"] { color: #8fd0a0; border-color: #8fd0a0; }
+  .theme[data-c="black"] { color: #1c1c1c; border-color: #1c1c1c; }
+  .theme[aria-pressed="true"] { border: 3px solid #1c1c1c; }
+  #msg { min-height: 1.4em; font-size: .85rem; color: #555; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <h1>Settings</h1>
+      <button class="save" id="saveBtn">save</button>
+    </div>
+    <label for="scanName">Scans name</label>
+    <input id="scanName" type="text" autocomplete="off">
+    <label>color theme</label>
+    <div class="themes" role="group" aria-label="color theme">
+      <button class="theme" data-c="yellow" aria-pressed="true">★</button>
+      <button class="theme" data-c="pink" aria-pressed="false">★</button>
+      <button class="theme" data-c="green" aria-pressed="false">★</button>
+      <button class="theme" data-c="black" aria-pressed="false">★</button>
+    </div>
+    <div id="msg"></div>
+  </div>
+</div>
+<script>
+  const nameInput = document.getElementById('scanName');
+  const msg = document.getElementById('msg');
+  let theme = 'yellow';
+  try {
+    const saved = JSON.parse(localStorage.getItem('snap_settings') || '{}');
+    if (saved.scanName) nameInput.value = saved.scanName;
+    if (saved.theme) theme = saved.theme;
+  } catch (e) {}
+  const btns = Array.from(document.querySelectorAll('.theme'));
+  function paint() { btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === theme ? 'true' : 'false')); }
+  btns.forEach(b => { b.onclick = () => { theme = b.dataset.c; paint(); }; });
+  paint();
+  document.getElementById('saveBtn').onclick = () => {
+    const scanName = nameInput.value.trim();
+    if (!scanName) { msg.textContent = 'please name your scan first.'; return; }
+    try { localStorage.setItem('snap_settings', JSON.stringify({ scanName, theme })); } catch (e) {}
+    location.href = 'scan.html';
+  };
+</script>
+</body>
+</html>
