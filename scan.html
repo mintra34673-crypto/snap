@@ -95,7 +95,12 @@
   const API = 'http://127.0.0.1:8000';
   async function read(f) {
     const out = document.getElementById('out');
-    out.textContent = 'reading… (make sure the COR server is running)';
+    const t0 = Date.now();
+    out.textContent = 'reading… 0s';
+    const timer = setInterval(() => {
+      out.textContent = 'reading… ' + Math.round((Date.now() - t0) / 1000) +
+        's (big PDFs take ~1 min per page, keep this tab open)';
+    }, 1000);
     try {
       const fd = new FormData();
       fd.append('file', f);
@@ -114,6 +119,8 @@
     } catch (e) {
       out.textContent = 'failed: ' + e.message +
         '\n(open a terminal in cor/ and run: .venv\\Scripts\\python -m uvicorn app.main:app --port 8000)';
+    } finally {
+      clearInterval(timer);
     }
   }
 </script>
