@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sign in — Snap word</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #fff;
+    font-family: ui-monospace, "Courier New", Menlo, monospace;
+    color: #1c1c1c; display: flex; align-items: center; justify-content: center; }
+  .wrap { text-align: center; padding: 24px; width: min(640px, 94vw); }
+  h1 { font-size: 1.6rem; font-weight: 400; letter-spacing: 3px; margin: 0 0 28px; }
+  .card { border: 2px solid #1c1c1c; border-radius: 32px; padding: 36px 48px;
+    text-align: center; }
+  .row { margin: 10px 0; }
+  button.link { border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: 1rem; color: #1c1c1c; padding: 4px 8px; }
+  button.link:hover { opacity: .65; }
+  .wavy { text-decoration: underline wavy #e8a0e8 1.5px; text-underline-offset: 4px; }
+  .muted { color: #555; font-size: .95rem; }
+  label { display: block; text-align: left; margin: 18px 0 8px; font-size: .95rem; }
+  input[type="email"], input[type="text"] {
+    width: 100%; font: inherit; font-size: 1rem; padding: 12px 14px;
+    border: 2px dashed #1c1c1c; border-radius: 6px; background: #fff; color: #1c1c1c; }
+  input::placeholder { color: #aaa; }
+  .right { text-align: right; margin-top: 14px; }
+  .back { display: inline-block; margin-top: 22px; color: #555; font-size: .9rem;
+    text-decoration: none; }
+  .back:hover { opacity: .65; }
+  #step2 { display: none; }
+  #msg { min-height: 1.4em; font-size: .9rem; color: #555; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>sign in</h1>
+  <div class="card">
+    <div id="step1">
+      <div class="row">
+        <button class="link" id="googleBtn"><span class="wavy">continue with Google</span> &nbsp;→</button>
+      </div>
+      <div class="row muted">or</div>
+      <label for="email">your email</label>
+      <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+      <div class="right">
+        <button class="link" id="codeBtn"><span class="wavy">email me a code</span> &nbsp;→</button>
+      </div>
+    </div>
+    <div id="step2">
+      <div class="row muted" id="sentTo"></div>
+      <label for="code">your code</label>
+      <input id="code" type="text" inputmode="numeric" placeholder="123456" maxlength="6">
+      <div class="right">
+        <button class="link" id="verifyBtn"><span class="wavy">verify</span> &nbsp;→</button>
+      </div>
+      <div class="row">
+        <button class="link muted" id="backBtn">← use a different email</button>
+      </div>
+    </div>
+    <div class="row" id="msg"></div>
+  </div>
+  <a class="back" href="index.html">← back</a>
+</div>
+<script>
+  const $ = id => document.getElementById(id);
+  const msg = $('msg');
+  $('googleBtn').onclick = () => { msg.textContent = 'Google sign-in is not connected yet (demo).'; };
+  $('codeBtn').onclick = () => {
+    const email = $('email').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      msg.textContent = 'please enter a valid email first.';
+      return;
+    }
+    msg.textContent = '';
+    $('sentTo').textContent = 'we sent a code to ' + email + ' (demo: any 6 digits works)';
+    $('step1').style.display = 'none';
+    $('step2').style.display = 'block';
+    $('code').focus();
+  };
+  $('backBtn').onclick = () => {
+    $('step2').style.display = 'none';
+    $('step1').style.display = 'block';
+    msg.textContent = '';
+  };
+  $('verifyBtn').onclick = () => {
+    if (!/^\d{6}$/.test($('code').value.trim())) {
+      msg.textContent = 'code must be 6 digits.';
+      return;
+    }
+    try { localStorage.setItem('snap_user', $('email').value.trim()); } catch (e) {}
+    location.href = 'index.html';
+  };
+</script>
+</body>
+</html>

@@ -1,33 +1,55 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Snap word — Snap it, get the word</title>
 <style>
-  body { margin: 0; min-height: 100vh; background: #fffdf8;
-    display: flex; flex-direction: column; align-items: center;
-    font-family: "Segoe UI", Tahoma, sans-serif; color: #c0452c; }
-  .stage { display: flex; flex-direction: column; align-items: center;
-    margin-top: 24px; }
-  .stage img { width: min(420px, 80vw); height: auto; display: block; }
-  .stage img.title { /* ชื่อนิ่ง ไม่ขยับ */ }
-  .stage img.folder { animation: float 3s ease-in-out infinite; }
+  :root { --ink: #4e4e4e; --teal: #7ce9de; --star: #ffda62; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #fff;
+    font-family: "Segoe UI", Tahoma, sans-serif; color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; }
+  .hero { position: relative; width: min(900px, 100vw); min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; padding: 24px 16px 60px; }
+  a.know { position: absolute; top: 24px; right: 24px; display: block; }
+  .know img { width: 130px; height: auto; display: block; }
+  .title img { width: min(560px, 86vw); height: auto; display: block; margin-top: 40px; }
+  .sub img { width: min(340px, 70vw); height: auto; display: block; margin: 10px 0 6px; }
+  a.folder-wrap { display: block; position: relative; width: min(430px, 82vw);
+    margin-top: 8px; }
+  .folder-wrap img.folder { width: 100%; height: auto; display: block;
+    animation: float 3s ease-in-out infinite; }
   @keyframes float {
-    0%,100% { transform: translateY(0) rotate(-1deg); }
-    50% { transform: translateY(-12px) rotate(1deg); } }
-  .stage img.folder:hover { animation: wiggle .4s ease-in-out infinite; }
-  @keyframes wiggle {
-    0%,100% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); } }
+    0%,100% { transform: translateY(0) rotate(-.6deg); }
+    50% { transform: translateY(-12px) rotate(.6deg); } }
+  /* ดาว CSS กะพริบ */
+  .star { position: absolute; color: var(--star); line-height: 1;
+    text-shadow: 0 0 12px var(--star), 0 0 28px var(--star);
+    animation: twinkle 1.8s ease-in-out infinite; user-select: none; }
+  @keyframes twinkle {
+    0%,100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: .45; transform: scale(.75) rotate(15deg); } }
 </style>
 </head>
 <body>
-  <div class="stage">
-  <!-- ชื่อจากรูปวาด นิ่ง -->
-  <img class="title" src="figma/art-title.svg" alt="Snap word">
-  <!-- แฟ้มจากรูปวาด ลอย -->
-  <img class="folder" src="figma/art-folder.svg" alt="folder drawing">
-  </div>
+<main class="hero">
+  <a class="know" href="login.html">
+    <img src="figma2/Know more.png" alt="Know more">
+  </a>
+
+  <span class="star" style="top:6%;left:12%;font-size:28px">★</span>
+  <span class="star" style="top:4%;left:46%;font-size:22px;animation-delay:.5s">★</span>
+  <span class="star" style="top:18%;left:8%;font-size:20px;animation-delay:1s">★</span>
+  <span class="star" style="top:8%;right:14%;font-size:24px;animation-delay:.3s">★</span>
+  <span class="star" style="top:44%;right:6%;font-size:26px;animation-delay:.8s">★</span>
+
+  <div class="title"><img src="figma2/title.jpg" alt="Snap word"></div>
+  <div class="sub"><img src="figma2/Snap it, get the word.png" alt="Snap it, get the word"></div>
+
+  <a class="folder-wrap" href="login.html" aria-label="Snap now">
+    <img class="folder" src="figma2/folder.svg" alt="folder - Snap now">
+  </a>
+</main>
 </body>
 </html>
