@@ -90,8 +90,31 @@
       img.src = URL.createObjectURL(f);
       drop.classList.add('has-file');
     }
-    document.getElementById('out').textContent =
-      'OCR is not connected yet — text will appear here after Phase 2.';
+    read(f);
+  }
+  const API = 'http://127.0.0.1:8000';
+  async function read(f) {
+    const out = document.getElementById('out');
+    out.textContent = 'reading… (make sure the COR server is running)';
+    try {
+      const fd = new FormData();
+      fd.append('file', f);
+      const r = await fetch(API + '/ocr', { method: 'POST', body: fd });
+      if (!r.ok) throw new Error('OCR ' + r.status);
+      const data = await r.json();
+      out.textContent = data.text + '\n\n—— summarizing ——';
+      const s = await fetch(API + '/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: data.text }),
+      });
+      if (!s.ok) throw new Error('summarize ' + s.status);
+      const sj = await s.json();
+      out.textContent = data.text + '\n\n—— summary ——\n' + sj.summary;
+    } catch (e) {
+      out.textContent = 'failed: ' + e.message +
+        '\n(open a terminal in cor/ and run: .venv\\Scripts\\python -m uvicorn app.main:app --port 8000)';
+    }
   }
 </script>
 </body>
