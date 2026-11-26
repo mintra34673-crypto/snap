@@ -86,6 +86,9 @@
     document.getElementById('aboutFile').textContent =
       f.name + ' · ' + Math.round(f.size / 1024) + ' KB';
     const img = document.getElementById('preview');
+    // ล้างพรีวิวเก่าทุกครั้งก่อน กันรูปค้างจากไฟล์ก่อนหน้า
+    img.removeAttribute('src');
+    drop.classList.remove('has-file');
     if (f.type.startsWith('image/')) {
       img.src = URL.createObjectURL(f);
       drop.classList.add('has-file');
