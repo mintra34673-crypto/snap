@@ -181,6 +181,11 @@
       const data = await r.json();
       if (my !== scanToken) return;
       renderLines(data);
+      if (my !== scanToken) return;
+      if (!data.text || !data.text.trim()) {
+        out.textContent = 'อ่านไม่เจอตัวอักษรเลย ลองรูปที่ชัด/ใหญ่กว่านี้';
+        return;
+      }
       out.textContent = '—— summarizing ——';
       try {
         const s = await fetch(API + '/summarize', {
