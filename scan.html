@@ -123,7 +123,8 @@
     scanBtn.style.display = 'inline-block';
     scanBtn.disabled = false;
   }
-  scanBtn.onclick = () => {
+  scanBtn.onclick = (e) => {
+    e.stopPropagation();
     if (!pendingFile) return;
     scanBtn.disabled = true;
     read(pendingFile, scanToken);
