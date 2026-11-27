@@ -49,6 +49,11 @@
   .back { display: inline-block; margin-top: 24px; color: var(--muted);
     font-size: .9rem; text-decoration: none; }
   .back:hover { opacity: .7; }
+  #scanBtn { display: none; margin-top: 14px; font: inherit; font-size: 1rem;
+    border: 2px solid var(--ink); background: var(--ink); color: var(--bg);
+    padding: 10px 26px; cursor: pointer; border-radius: 8px; }
+  #scanBtn:hover { opacity: .8; }
+  #scanBtn:disabled { opacity: .4; cursor: wait; }
 </style>
 </head>
 <body data-theme="yellow">
@@ -66,6 +71,7 @@
         <p class="muted" id="aboutFile">about your file here</p>
       </div>
       <img id="preview" alt="scan preview">
+      <button id="scanBtn">scan this file →</button>
     </div>
     <div class="side">
       <h2>Your text</h2>
@@ -95,7 +101,13 @@
   drop.ondragover = e => e.preventDefault();
   drop.ondrop = e => { e.preventDefault(); if (e.dataTransfer.files[0]) pick(e.dataTransfer.files[0]); };
   file.onchange = () => { if (file.files[0]) pick(file.files[0]); };
+  let pendingFile = null;
+  let scanToken = 0;
+  const scanBtn = document.getElementById('scanBtn');
   function pick(f) {
+    // ไฟล์ใหม่มาตัดงานเก่าทิ้ง กันข้อมูลเก่าปน
+    scanToken++;
+    pendingFile = f;
     document.getElementById('aboutFile').textContent =
       f.name + ' · ' + Math.round(f.size / 1024) + ' KB';
     const img = document.getElementById('preview');
@@ -106,8 +118,16 @@
       img.src = URL.createObjectURL(f);
       drop.classList.add('has-file');
     }
-    read(f);
+    document.getElementById('lines').textContent = '';
+    document.getElementById('out').textContent = 'press “scan this file →” when ready';
+    scanBtn.style.display = 'inline-block';
+    scanBtn.disabled = false;
   }
+  scanBtn.onclick = () => {
+    if (!pendingFile) return;
+    scanBtn.disabled = true;
+    read(pendingFile, scanToken);
+  };
   const API = 'http://127.0.0.1:8000';
   const LINE_LABEL = { PASS: '✓ match', NEEDS_REVIEW: '⚠ check', UNREADABLE: '✕ unreadable', UNCHECKED: '○ single' };
   function renderLines(data) {
@@ -141,12 +161,13 @@
       });
     });
   }
-  async function read(f) {
+  async function read(f, my) {
     const out = document.getElementById('out');
     document.getElementById('lines').textContent = '';
     const t0 = Date.now();
     out.textContent = 'reading… 0s';
     const timer = setInterval(() => {
+      if (my !== scanToken) { clearInterval(timer); return; }
       out.textContent = 'reading… ' + Math.round((Date.now() - t0) / 1000) +
         's (big PDFs take ~1 min per page, keep this tab open)';
     }, 1000);
@@ -154,8 +175,10 @@
       const fd = new FormData();
       fd.append('file', f);
       const r = await fetch(API + '/ocr?second=true', { method: 'POST', body: fd });
+      if (my !== scanToken) return; // ไฟล์ใหม่มาแล้ว ทิ้งผลเก่า
       if (!r.ok) throw new Error('OCR ' + r.status);
       const data = await r.json();
+      if (my !== scanToken) return;
       renderLines(data);
       out.textContent = '—— summarizing ——';
       try {
@@ -164,18 +187,23 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: data.text }),
         });
+        if (my !== scanToken) return;
         if (!s.ok) throw new Error('summarize ' + s.status);
         const sj = await s.json();
+        if (my !== scanToken) return;
         out.textContent = data.text + '\n\n—— summary ——\n' + sj.summary;
       } catch (e2) {
+        if (my !== scanToken) return;
         out.textContent = data.text +
-          '\n\n—— summary failed (' + e2.message + '), tap the file again to retry ——';
+          '\n\n—— summary failed (' + e2.message + '), press scan again to retry ——';
       }
     } catch (e) {
+      if (my !== scanToken) return;
       out.textContent = 'failed: ' + e.message +
         '\n(open a terminal in cor/ and run: .venv\\Scripts\\python -m uvicorn app.main:app --port 8000)';
     } finally {
       clearInterval(timer);
+      if (my === scanToken) scanBtn.disabled = false;
     }
   }
 </script>
