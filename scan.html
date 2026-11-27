@@ -34,6 +34,16 @@
   .side h2 { font-size: .95rem; font-weight: 400; margin: 0 0 8px; }
   .side p { font-size: .85rem; color: var(--muted); }
   #out { white-space: pre-wrap; font-size: .9rem; margin-top: 12px; }
+  .ln { border: 1px solid var(--ink); padding: 5px 8px; margin: 5px 0; font-size: .85rem; }
+  .ln[data-s="PASS"] { background: rgba(100, 217, 130, .25); }
+  .ln[data-s="NEEDS_REVIEW"] { background: rgba(255, 212, 0, .3); }
+  .ln[data-s="UNREADABLE"] { background: rgba(233, 75, 133, .2); }
+  .ln[data-s="UNCHECKED"] { background: transparent; opacity: .85; }
+  .ln .tag { font-size: .65rem; opacity: .7; display: block; margin-bottom: 2px; }
+  .ln button.use-alt { display: block; margin-top: 5px; font: inherit; font-size: .75rem;
+    border: 1px solid var(--ink); background: var(--bg); color: var(--ink);
+    padding: 3px 8px; cursor: pointer; border-radius: 4px; }
+  .ln button.use-alt:hover { opacity: .7; }
   .back { display: inline-block; margin-top: 24px; color: var(--muted);
     font-size: .9rem; text-decoration: none; }
   .back:hover { opacity: .7; }
@@ -58,6 +68,7 @@
     <div class="side">
       <h2>Your text</h2>
       <p>your text will show up here</p>
+      <div id="lines"></div>
       <div id="out"></div>
     </div>
   </div>
@@ -96,8 +107,41 @@
     read(f);
   }
   const API = 'http://127.0.0.1:8000';
+  const LINE_LABEL = { PASS: '✓ match', NEEDS_REVIEW: '⚠ check', UNREADABLE: '✕ unreadable', UNCHECKED: '○ single' };
+  function renderLines(data) {
+    const box = document.getElementById('lines');
+    box.textContent = '';
+    (data.pages || []).forEach(pg => {
+      (pg.lines || []).forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'ln';
+        row.dataset.s = l.status;
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = LINE_LABEL[l.status] || l.status;
+        const tx = document.createElement('div');
+        tx.textContent = l.text;
+        row.append(tag, tx);
+        if (l.alt) {
+          const b = document.createElement('button');
+          b.className = 'use-alt';
+          b.textContent = 'other reading: ' + l.alt.slice(0, 80) + ' — use this';
+          b.onclick = () => { tx.textContent = l.alt; row.dataset.s = 'PASS'; tag.textContent = '✓ picked'; b.remove(); };
+          row.appendChild(b);
+        }
+        if (l.note) {
+          const n = document.createElement('div');
+          n.className = 'tag';
+          n.textContent = l.note;
+          row.appendChild(n);
+        }
+        box.appendChild(row);
+      });
+    });
+  }
   async function read(f) {
     const out = document.getElementById('out');
+    document.getElementById('lines').textContent = '';
     const t0 = Date.now();
     out.textContent = 'reading… 0s';
     const timer = setInterval(() => {
@@ -110,7 +154,8 @@
       const r = await fetch(API + '/ocr?second=true', { method: 'POST', body: fd });
       if (!r.ok) throw new Error('OCR ' + r.status);
       const data = await r.json();
-      out.textContent = data.text + '\n\n—— summarizing ——';
+      renderLines(data);
+      out.textContent = '—— summarizing ——';
       try {
         const s = await fetch(API + '/summarize', {
           method: 'POST',
