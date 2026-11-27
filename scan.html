@@ -191,11 +191,11 @@
         if (!s.ok) throw new Error('summarize ' + s.status);
         const sj = await s.json();
         if (my !== scanToken) return;
-        out.textContent = data.text + '\n\n—— summary ——\n' + sj.summary;
+        out.textContent = '—— summary ——\n' + sj.summary;
       } catch (e2) {
         if (my !== scanToken) return;
-        out.textContent = data.text +
-          '\n\n—— summary failed (' + e2.message + '), press scan again to retry ——';
+        out.textContent =
+          '—— summary failed (' + e2.message + '), press scan again to retry ——';
       }
     } catch (e) {
       if (my !== scanToken) return;
